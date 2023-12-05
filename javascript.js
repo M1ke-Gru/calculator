@@ -21,7 +21,7 @@ class Calculator {
     switch (value) {
       case "=":
         this.currentString = this.currentString.concat(value);
-        this.currentString = this.correctInputMistakes(this.currentString);
+        this.correctInputMistakes(this.currentString);
         this.lastInputed.innerHTML = this.currentString;
         this.currentString = "";
         this.calculate(this.lastInputed.innerHTML);
@@ -43,19 +43,57 @@ class Calculator {
   correctInputMistakes(input) {
     const operators = ["(", ")", "!", "√", "^", "*", "/", "+", "-"];
     let inputArray = input.split('');
-    for (let i = 0; i < inputArray.length; i++) {
-      let i_in_operators = false;
-      for (let o in operators) {
-        if (inputArray[i] === o) {
-          i_in_operators = true;
+    function inOperators(currentChar) {
+      for (let o of operators) {
+        if (inputArray[currentChar] === o) {
+          return true;
         }
       }
-      if ((i_in_operators) && (input[i+1] === "(" || input[i+1] === "!")) {
+      return false;
+    }
+    let openParenthesisQuantity = 0;
+    let closedParenthesisQuantity = 0;
+    function checkViableFirstValue(inputArray) {
+      if ((inOperators(inputArray[0]) && inputArray[0] !== "(")  || inputArray[0] === ".") {
+        inputArray.shift();
+        console.log(inputArray);
+        inputArray = checkViableFirstValue(inputArray);
+      }
+      return inputArray;
+    }
+    inputArray = checkViableFirstValue(inputArray);
+    for (let i = 0; i < inputArray.length; i++) {
+      if (!(inOperators(i)) && (inputArray[i+1] === "(" || inputArray[i+1] === "!")) {
+        inputArray.splice(i+1, 0, "*");
+      }
+      
+      if (inputArray[i] === ")" && inputArray[i+1] !== ")" && inputArray[i+1] !== "*" && inputArray[i+1] !== "=") {        
         inputArray.splice(i+1, 0, "*");
       } 
+      
+      if (inputArray[i] === "." && inOperators(i+1)) {
+        inputArray.splice(i, 1);
+      }
+
+      if (inputArray[i] === "(") {
+        ++openParenthesisQuantity;
+      }
+
+      if (inputArray[i] === ")") {
+        ++closedParenthesisQuantity;
+      }
     }
-    input = inputArray.join('');
-    return input;
+    if (openParenthesisQuantity > closedParenthesisQuantity) {
+      for (let i = 0; i < (openParenthesisQuantity - closedParenthesisQuantity); i++) {
+        inputArray.splice(inputArray.length - 1, 0, ")");
+      }
+    } else if (openParenthesisQuantity < closedParenthesisQuantity) {
+      for (let i = 0; i < (closedParenthesisQuantity - openParenthesisQuantity); i++) {
+        inputArray.unshift("(");
+      }
+    }     
+    this.currentString = inputArray.join('');
+
   }
 
   calculate(expression) {
