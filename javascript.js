@@ -21,6 +21,7 @@ class Calculator {
     switch (value) {
       case "=":
         this.currentString = this.currentString.concat(value);
+        this.currentString = this.correctInputMistakes(this.currentString);
         this.lastInputed.innerHTML = this.currentString;
         this.currentString = "";
         this.calculate(this.lastInputed.innerHTML);
@@ -38,28 +39,47 @@ class Calculator {
     }
     this.currentInput.innerHTML = this.currentString;
   }
-  
-calculate(expression) {
-    const priority = [ ["("], [")"], ["!", "√"], ["^"], ["*", "/"], ["+", "-"]];
-    const operationExecutionOrder = this.buildOperationExecutionOrder(expression, priority);
-}
 
-buildOperationExecutionOrder(expression, priority) {
-    const operationExecutionOrder = [[], [], [], [], [], []]; 
+  correctInputMistakes(input) {
+    const operators = ["(", ")", "!", "√", "^", "*", "/", "+", "-"];
+    let inputArray = input.split('');
+    for (let i = 0; i < inputArray.length; i++) {
+      let i_in_operators = false;
+      for (let o in operators) {
+        if (inputArray[i] === o) {
+          i_in_operators = true;
+        }
+      }
+      if ((i_in_operators) && (input[i+1] === "(" || input[i+1] === "!")) {
+        inputArray.splice(i+1, 0, "*");
+      } 
+    }
+    input = inputArray.join('');
+    return input;
+  }
+
+  calculate(expression) {
+    const priority = [["("], [")"], ["!", "√"], ["^"], ["*", "/"], ["+", "-"]];
+    const operationExecutionOrder = this.createOperationExecutionOrder(expression, priority);
+
+  }
+
+  createOperationExecutionOrder(expression, priority) {
+    const operationExecutionOrder = [[], [], [], [], [], []];
 
     for (let charPos = 0; charPos < expression.length; charPos++) {
-        for (let i = 0; i < priority.length; i++) {
-            for (let j = 0; j < priority[i].length; j++) {
-                if (expression[charPos] === priority[i][j]) {
-                    operationExecutionOrder[i].push(charPos);
-                    break; // Break out of the inner loop once a match is found
-                }
-            }
+      for (let i = 0; i < priority.length; i++) {
+        for (let j = 0; j < priority[i].length; j++) {
+          if (expression[charPos] === priority[i][j]) {
+            operationExecutionOrder[i].push(charPos);
+            break; // Break out of the inner loop once a match is found
+          }
         }
+      }
     }
 
     return operationExecutionOrder;
-}
+  }
 
   calculateOperation(operation) {
 
@@ -87,6 +107,6 @@ class Button {
     const bottomBorder = pos_y + width;
     button.style.gridArea = "${pos_x} / ${pos_y} / ${rightBorder} / ${bottomBorder}";
   }
-} 
+}
 
 const calculator = new Calculator();
