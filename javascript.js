@@ -72,8 +72,15 @@ class Calculator {
     const numbers = [exprArr[operationNumber - 1], exprArr[operationNumber + 1]];
     let operationResult;
     let eraseNumbersInDirection = [];
-    switch(expressionArray[operationNumber]) {
+    switch(exprArr[operationNumber]) {
       case "(":
+        let closingParenthesisLocation = operationNumber;
+        while (exprArr[closingParenthesisLocation] !== ")") {
+          closingParenthesisLocation++;
+        }
+        let subExpression = exprArr.slice(operationNumber+1, closingParenthesisLocation);
+        operationResult = this.calculate(subExpression);
+        eraseNumbersInDirection = [0, operationNumber - closingParenthesisLocation + 1];
         break;
       case "!":
         operationResult = 1;
@@ -85,7 +92,12 @@ class Calculator {
         eraseNumbersInDirection = [1, 0];
         break;
       case "√":
-        operationResult = Math.sqrt(numbers[1]);
+        let number = parseFloat(numbers[1]); // Parse as float
+        if (!isNaN(Math.sqrt(number))) { // Check if number is valid
+            operationResult = Math.sqrt(number);
+        } else {
+            operationResult = number;
+        }
         eraseNumbersInDirection = [0, 1];
         break;
       case "^":
@@ -130,36 +142,22 @@ class Calculator {
     for (currentExprArrPosition; currentExprArrPosition >= 0; currentExprArrPosition--) {
       if (expressionArray[currentExprArrPosition] === "(") {
         nextOperationPosition = currentExprArrPosition;
-        break;
+        console.log("Next operation position: " + nextOperationPosition);
+        return nextOperationPosition;
       }
     }
     if (nextOperationPosition < 0) {
-      for (let currentExprArrPosition = 0; currentExprArrPosition < expressionArray.length; currentExprArrPosition++) {  
-        for (let i = 1; i < priority.length; i++) {
+      for (let i = 1; i < priority.length; i++) {
+        for (let currentExprArrPosition = 0; currentExprArrPosition < expressionArray.length; currentExprArrPosition++) {  
           if (priority[i][0] === expressionArray[currentExprArrPosition] || priority[i][1] === expressionArray[currentExprArrPosition]) {
             nextOperationPosition = currentExprArrPosition;
-            break;
+            console.log("Next operation position: " + nextOperationPosition);
+            return nextOperationPosition;
           }
         }
       }
     }
-    console.log("Next operation position: " + nextOperationPosition);
-    return nextOperationPosition;
-  }
-
-  parenthesisExecutionOrderReverser(expressionArray, operationExecutionOrder) {
-    let parenthesisNumber = 0;
-    for (let i of expressionArray) {
-      if (i === "(") {
-        parenthesisNumber++;
-      }
-    }
-    if (parenthesisNumber > 1) {
-      let portionToReverse = operationExecutionOrder.slice(0, parenthesisNumber);
-      portionToReverse.reverse();
-      operationExecutionOrder.splice(0, portionToReverse.length, ...portionToReverse);
-    }
-    return operationExecutionOrder;
+    
   }
 
   identifyNumbers(expressionArray) {
@@ -202,7 +200,7 @@ class Calculator {
   }
   
   correctForCalculation(expressionArray) {
-    for (let i = 0; i < expressionArray.length; i++) {
+    for (let i = 1; i < expressionArray.length; i++) {
       if (expressionArray[i] === "√" && !this.operators.includes(expressionArray[i-1])) {
         expressionArray.splice(i, 0, "*");
       }
