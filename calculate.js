@@ -1,7 +1,6 @@
 class Calculate {
   constructor() {
     this.operators = ["(", ")", "!", "√", "^", "*", "/", "+", "-"];
-    console.log("Calculate constructed")
   }
 
   main(expression) {
@@ -37,9 +36,9 @@ class Calculate {
           console.log(exprArr);
           console.log(closingParenthesisLocation);
         }
-        let subExpression = exprArr.slice(operationNumber+1, closingParenthesisLocation+1);
-        operationResult = this.calculate(subExpression);
-        eraseNumbersInDirection = [0, operationNumber - closingParenthesisLocation + 1];
+        let subExpression = exprArr.slice(operationNumber+1, closingParenthesisLocation);
+        operationResult = this.main(subExpression);
+        eraseNumbersInDirection = [0, closingParenthesisLocation - operationNumber];
         break;
       case "!":
         operationResult = 1;
