@@ -41,22 +41,30 @@ class Calculate {
         eraseNumbersInDirection = [0, closingParenthesisLocation - operationNumber];
         break;
       case "!":
-        operationResult = 1;
-        let i = 1;
-        while (i < numbers[0] + 1 && i !== 0) {
-          operationResult *= i;
-          i++;
+        if (numbers[0] > 0 && Number.isInteger(numbers[0]) && !this.operators.includes(numbers[0])) {
+          operationResult = 1;
+          let i = 1;
+          while (i < numbers[0] + 1 && i !== 0) {
+            operationResult *= i;
+            i++;
+          }
+          eraseNumbersInDirection = [1, 0];
+        } else {
+          operationResult = "Error in factorial";
         }
-        eraseNumbersInDirection = [1, 0];
         break;
       case "√":
         let number = parseFloat(numbers[1]); // Parse as float
-        if (!isNaN(Math.sqrt(number))) { // Check if number is valid
-            operationResult = Math.sqrt(number);
+        if (number >= 0) {
+          if (!isNaN(Math.sqrt(number))) { // Check if number is valid
+              operationResult = Math.sqrt(number);
+          } else {
+              operationResult = number;
+          }
+          eraseNumbersInDirection = [0, 1];
         } else {
-            operationResult = number;
+          operationResult = "Error in square root";
         }
-        eraseNumbersInDirection = [0, 1];
         break;
       case "^":
         operationResult = numbers[0] ** numbers[1];
@@ -85,9 +93,13 @@ class Calculate {
         }
         break;
     }
-    const eraseStart = operationNumber - eraseNumbersInDirection[0];
-    const eraseLength = eraseNumbersInDirection[1] + eraseNumbersInDirection[0] + 1;
-    exprArr.splice(eraseStart, eraseLength, operationResult);
+    if (typeof operationResult !== "string") {
+      const eraseStart = operationNumber - eraseNumbersInDirection[0];
+      const eraseLength = eraseNumbersInDirection[1] + eraseNumbersInDirection[0] + 1;
+      exprArr.splice(eraseStart, eraseLength, operationResult);
+    } else {
+      exprArr = [operationResult];
+    }
     return exprArr;
   }
   
@@ -158,6 +170,11 @@ class Calculate {
     for (let i = 1; i < expressionArray.length; i++) {
       if (expressionArray[i] === "√" && !this.operators.includes(expressionArray[i-1])) {
         expressionArray.splice(i, 0, "*");
+      }
+      const operatorsExcludedForMinus = ["(", ")", "!"];
+      if (expressionArray[i] === "-" && this.operators.includes(expressionArray[i-1]) && !operatorsExcludedForMinus.includes(expressionArray[i-1])) {
+        expressionArray.splice[i-1, 0, "("];
+        expressionArray.splice[i+2, 0, ")"];
       }
     }
     return expressionArray;
