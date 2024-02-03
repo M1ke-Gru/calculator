@@ -27,7 +27,7 @@ class Calculator {
         this.lastInputed.innerHTML = this.currentString;
         this.currentString = "";
         const calculate = new Calculate();
-        this.currentString = calculate.main(this.lastInputed.innerHTML);
+        setTimeout(this.currentString = calculate.main(this.lastInputed.innerHTML), 500);
         break;
       case "C":
         this.lastInputed.innerHTML = "";
