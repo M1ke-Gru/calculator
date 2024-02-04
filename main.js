@@ -6,10 +6,11 @@ class Calculator {
     this.lastInputed = document.querySelector("#lastInputed");
     this.keys = [...["(", ")", "DEL"], ..."C!^√/123*456+789-±0.=".split('')];
     this.operators = ["(", ")", "!", "√", "^", "*", "/", "+", "-"];
-    this.createKeyboard();
+    this.createKeys();
+    this.keyboardListener();
   }
 
-  createKeyboard() {
+  createKeys() {
     for (let i = 0; i < 24; ++i) {
       const buttonElement = new Button(this.keys[i], this, i % 4, i / 6);
     }
@@ -27,7 +28,7 @@ class Calculator {
         this.lastInputed.innerHTML = this.currentString;
         this.currentString = "";
         const calculate = new Calculate();
-        setTimeout(this.currentString = calculate.main(this.lastInputed.innerHTML), 500);
+        this.currentString = calculate.main(this.lastInputed.innerHTML);
         break;
       case "C":
         this.lastInputed.innerHTML = "";
@@ -43,7 +44,7 @@ class Calculator {
     if (this.currentString === ".") {
       this.currentString = "0."
     }
-    const cantBeFirst = [")", "!", " ^", "*", "/", "+"];
+    const cantBeFirst = [")", "!", "^", "*", "/", "+"];
     for (let i of cantBeFirst) {
       if (i === this.currentString) {
         this.currentString = "0";
@@ -52,6 +53,24 @@ class Calculator {
     }
     
     this.currentInput.innerHTML = this.currentString;
+  }
+
+  keyboardListener() {
+    document.addEventListener('keydown', (event) => {
+      let key = event.key;
+      console.log(key);
+  
+      if (this.keys.includes(key)) {
+        console.log("Valid key: " + key);
+        this.clicked(key);
+      } else if (key === "Backspace") {
+        this.clicked("DEL");
+      } else if (key === "Enter") {
+        this.clicked("=");
+      } else if (key.toLowerCase() === "c") {
+        this.clicked("C");
+      }
+    });
   }
 }
 
