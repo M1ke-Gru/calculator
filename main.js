@@ -5,7 +5,8 @@ class Calculator {
     this.currentString = "0";
     this.lastInputed = document.querySelector("#lastInputed");
     this.keys = [...["(", ")", "DEL"], ..."C!^√/123*456+789-±0.=".split('')];
-    this.operators = ["(", ")", "!", "√", "^", "*", "/", "+", "-"];
+    this.operators = ["(", "!", "√", "^", "*", "/", "+", "-"];
+    this.otherCharactersPressed = "";
     this.createKeys();
     this.keyboardListener();
   }
@@ -20,26 +21,31 @@ class Calculator {
     if (this.currentString === "0") {
       this.currentString = "";
     }
-    switch (value) {
-      case "=":
-        this.currentString = this.currentString.concat(value);
-        //const inputCorrector = new InputCorrector(this.currentString);
-        //this.currentString = inputCorrector.correct();
-        this.lastInputed.innerHTML = this.currentString;
-        this.currentString = "";
-        const calculate = new Calculate();
-        this.currentString = calculate.main(this.lastInputed.innerHTML);
-        break;
-      case "C":
-        this.lastInputed.innerHTML = "";
-        this.currentString = "0";
-        break;
-      case "DEL":
-        this.currentString = this.currentString.slice(0, this.currentString.length - 1);
-        break;
-      default:
-        this.currentString = this.currentString.concat(value);
-        break;
+    if (!(this.operators.includes(value) && this.currentString[this.currentString.length - 1] === value && value !== "(" && value !== ")")) { 
+      switch (value) {
+        case "=":
+          this.currentString = this.currentString.concat(value);
+          //const inputCorrector = new InputCorrector(this.currentString);
+          //this.currentString = inputCorrector.correct();
+          this.lastInputed.innerHTML = this.currentString;
+          this.currentString = "";
+          const calculate = new Calculate();
+          this.currentString = calculate.main(this.lastInputed.innerHTML);
+          break;
+        case "C":
+          this.lastInputed.innerHTML = "";
+          this.currentString = "0";
+          break;
+        case "DEL":
+          this.currentString = this.currentString.slice(0, this.currentString.length - 1);
+          break;
+        case "±":
+          this.currentString = negation(this.currentString.length, this.currentString, this.operators);
+          break;
+        default:
+          this.currentString = this.currentString.concat(value);
+          break;
+      }
     }
     if (this.currentString === ".") {
       this.currentString = "0."
@@ -69,6 +75,15 @@ class Calculator {
         this.clicked("=");
       } else if (key.toLowerCase() === "c") {
         this.clicked("C");
+      } else if (key.length === 1) {
+        this.otherCharactersPressed += key;
+        console.log(this.otherCharactersPressed);
+        if (this.otherCharactersPressed.slice(-4) === "sqrt") {
+          this.clicked("√");
+        }
+        if (this.otherCharactersPressed.slice(-2) === "pm") {
+          this.clicked("±");
+        }
       }
     });
   }
