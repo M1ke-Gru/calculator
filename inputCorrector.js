@@ -23,15 +23,6 @@ class InputCorrector {
     return false;
   }
   
-  checkViableFirstValue() {
-    if ((this.inOperators(this.inputArray[0]) && this.inputArray[0] !== "(") || this.inputArray[0] === ".") {
-      this.inputArray.shift();
-      console.log(this.inputArray);
-      this.inputArray = this.checkViableFirstValue();
-    }
-    return this.inputArray;
-  }
-  
   checkThisAndNext(i) {
       if (!(this.inOperators(i)) && (this.inputArray[i+1] === "(" || this.inputArray[i+1] === "!")) {
         this.inputArray.splice(i+1, 0, "*");
