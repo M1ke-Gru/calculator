@@ -106,7 +106,7 @@ class Calculate {
   findNextOperation(expressionArray) {
     const priority = [["("], ["!", "√"], ["^"], ["*", "/"], ["+", "-"]];
     let nextOperationPosition = -1;
-    let currentExprArrPosition = expressionArray.length; // because first the code needs to detect all the parenthese, which you do from the end
+    let currentExprArrPosition = expressionArray.length; // because first the code needs to detect all the parentheses, which you do from the end
     for (currentExprArrPosition; currentExprArrPosition >= 0; currentExprArrPosition--) {
       if (expressionArray[currentExprArrPosition] === "(") {
         nextOperationPosition = currentExprArrPosition;
