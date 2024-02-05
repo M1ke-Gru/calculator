@@ -25,8 +25,8 @@ class Calculator {
       switch (value) {
         case "=":
           this.currentString = this.currentString.concat(value);
-          //const inputCorrector = new InputCorrector(this.currentString);
-          //this.currentString = inputCorrector.correct();
+          const inputCorrector = new InputCorrector(this.currentString);
+          this.currentString = inputCorrector.correct();
           this.lastInputed.innerHTML = this.currentString;
           this.currentString = "";
           const calculate = new Calculate();
@@ -63,11 +63,8 @@ class Calculator {
 
   keyboardListener() {
     document.addEventListener('keydown', (event) => {
-      let key = event.key;
-      console.log(key);
-  
+      let key = event.key; 
       if (this.keys.includes(key)) {
-        console.log("Valid key: " + key);
         this.clicked(key);
       } else if (key === "Backspace") {
         this.clicked("DEL");
@@ -77,7 +74,6 @@ class Calculator {
         this.clicked("C");
       } else if (key.length === 1) {
         this.otherCharactersPressed += key;
-        console.log(this.otherCharactersPressed);
         if (this.otherCharactersPressed.slice(-4) === "sqrt") {
           this.clicked("√");
         }

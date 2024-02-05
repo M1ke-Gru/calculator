@@ -7,7 +7,6 @@ class InputCorrector {
   }
 
   correct() {
-    this.inputArray = this.checkViableFirstValue();
     for (let i = 0; i < this.inputArray.length; i++) {
       this.checkThisAndNext(i);
     }
