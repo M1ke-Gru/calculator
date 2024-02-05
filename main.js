@@ -17,6 +17,20 @@ class Calculator {
     }
   }
 
+  clickedWithTimeout(value) {
+    const timeoutMilliseconds = 5000;
+    const timeoutId = setTimeout(() => {
+        this.currentString = "Error: execution timeout";
+        this.currentInput.innerHTML = this.currentString;
+    }, timeoutMilliseconds);
+
+    try {
+        this.clicked(value);
+    } finally {
+        clearTimeout(timeoutId);
+    }
+  }
+
   clicked(value) {
     if (this.currentString === "0") {
       this.currentString = "";
@@ -65,20 +79,20 @@ class Calculator {
     document.addEventListener('keydown', (event) => {
       let key = event.key; 
       if (this.keys.includes(key)) {
-        this.clicked(key);
+        this.clickedWithTimeout(key);
       } else if (key === "Backspace") {
-        this.clicked("DEL");
+        this.clickedWithTimeout("DEL");
       } else if (key === "Enter") {
-        this.clicked("=");
+        this.clickedWithTimeout("=");
       } else if (key.toLowerCase() === "c") {
-        this.clicked("C");
+        this.clickedWithTimeout("C");
       } else if (key.length === 1) {
         this.otherCharactersPressed += key;
         if (this.otherCharactersPressed.slice(-4) === "sqrt") {
-          this.clicked("√");
+          this.clickedWithTimeout("√");
         }
         if (this.otherCharactersPressed.slice(-2) === "pm") {
-          this.clicked("±");
+          this.clickedWithTimeout("±");
         }
       }
     });
@@ -93,7 +107,7 @@ class Button {
     button.innerHTML = value;
     this.addCSS(button, height, width, pos_x, pos_y);
     calculator.buttons.appendChild(button);
-    button.addEventListener('click', () => calculator.clicked(this.value))
+    button.addEventListener('click', () => calculator.clickedWithTimeout(this.value))
   }
 
   addCSS(button, height, width, pos_x, pos_y) {

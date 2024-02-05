@@ -11,6 +11,7 @@ class InputCorrector {
       this.checkThisAndNext(i);
     }
     this.checkForLeftoverParentheese();
+    this.checkLastValue();
     return this.inputArray.join('');
   }
 
@@ -57,5 +58,13 @@ class InputCorrector {
         this.inputArray.unshift("(");
       }
     }     
+  }
+
+  checkLastValue() {
+    const lastValuePosition = this.inputArray.length-2
+    const lastValue = this.inputArray[lastValuePosition];
+    if (lastValue !== ")" && lastValue !== "!" && this.operators.includes(lastValue)) {
+      this.inputArray.splice(lastValuePosition, 1);
+    }
   }
 }
