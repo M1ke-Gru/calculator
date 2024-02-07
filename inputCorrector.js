@@ -8,6 +8,9 @@ class InputCorrector {
 
   correct() {
     for (let i = 0; i < this.inputArray.length; i++) {
+      if (this.inputArray[this.inputArray.length] === NaN) {
+        break;
+      }
       this.checkThisAndNext(i);
     }
     this.checkForLeftoverParentheese();
@@ -25,17 +28,23 @@ class InputCorrector {
   }
   
   checkThisAndNext(i) {
-      if (!(this.inOperators(i)) && (this.inputArray[i+1] === "(" || this.inputArray[i+1] === "!")) {
-        this.inputArray.splice(i+1, 0, "*");
-      }
-      
-      if (this.inputArray[i] === ")" && this.inputArray[i+1] !== ")" && this.inputArray[i+1] !== "*" && this.inputArray[i+1] !== "=") {
-        this.inputArray.splice(i+1, 0, "*");
-      }
+      this.writeAdditionalMultiplication(i);
       
       if (this.inputArray[i] === "." && this.inOperators(i+1)) {
         this.inputArray.splice(i, 1);
       }
+  }
+
+  writeAdditionalMultiplication(i) {
+    if ((!this.operators.includes(this.inputArray[i]) || this.inputArray[i] === "!") && (this.inputArray[i+1] === "(" || this.inputArray[i+1] === "√")) {
+      console.log("Conditional");
+      this.inputArray.splice(i+1, 0, '*');
+      console.log(this.inputArray);
+    }
+
+    if (!this.operators.includes(this.inputArray[i+1]) && (this.inputArray[i] === ")" || this.inputArray[i] === "!")) {
+      this.inputArray.splice(i+1, 0, '*');
+    }
   }
 
   checkForLeftoverParentheese() {
